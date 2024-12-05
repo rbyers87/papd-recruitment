@@ -1,15 +1,14 @@
 import React from 'react';
-import { Menu, Shield } from 'lucide-react';
+import { Menu } from 'lucide-react';
+import { DepartmentPatch } from './DepartmentPatch';
 
 export function Header() {
   return (
     <header className="bg-blue-900 text-white">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
-          <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 flex items-center justify-center bg-white rounded-full">
-              <Shield className="w-8 h-8 text-blue-900" />
-            </div>
+          <div className="flex items-center space-x-4">
+            <DepartmentPatch />
             <span className="text-xl font-bold">Port Arthur Police Department</span>
           </div>
           <nav className="hidden md:flex space-x-8">

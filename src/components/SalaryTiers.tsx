@@ -31,7 +31,13 @@ export function SalaryTiers() {
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl font-bold text-center mb-12">Career Progression & Salary</h2>
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold mb-4">Career Progression & Salary</h2>
+          <p className="text-gray-600 max-w-2xl mx-auto">
+            We hire through a traditional civil service exam and offer lateral entry for those who are already certified or enrolled in a police academy.
+          </p>
+        </div>
+        
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           {salaryTiers.map((tier, index) => (
             <div key={index} className="bg-gray-50 rounded-xl p-6 hover:shadow-lg transition">
