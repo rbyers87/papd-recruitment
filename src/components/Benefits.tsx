@@ -20,7 +20,7 @@ const benefits = [
   {
     icon: Clock,
     title: "Retirement Plan",
-    description: "TMRS retirement with 2:1 city matching and 10-year vesting"
+    description: "5% TMRS retirement with 2:1 city matching and 10-year vesting"
   }
 ];
 

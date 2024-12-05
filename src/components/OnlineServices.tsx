@@ -8,7 +8,7 @@ export function OnlineServices() {
         <h2 className="text-3xl font-bold text-center mb-12">Online Services</h2>
         <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
           <a
-            href="https://crashreport.txdot.gov/"
+            href="https://buycrash.lexisnexisrisk.com/ui/report/search?state=TX&jurisdiction=Port%20Arthur%20Police%20Department"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition flex flex-col items-center text-center"
@@ -22,7 +22,7 @@ export function OnlineServices() {
           </a>
 
           <a
-            href="https://www.p3tips.com/tipform.aspx?ID=596"
+            href="https://secure.coplogic.com/dors/en/filing/submitreport?dynparam=1733427005910"
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md transition flex flex-col items-center text-center"
