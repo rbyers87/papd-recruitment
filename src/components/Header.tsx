@@ -8,7 +8,7 @@ export function Header() {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-20">
           <div className="flex items-center space-x-4">
-          <DepartmentPatch imageUrl="./photos/papdPatch.png" />
+          <DepartmentPatch imageUrl="./photos/papdPatch" />
             <span className="text-xl font-bold">Port Arthur Police Department</span>
           </div>
           <nav className="hidden md:flex space-x-8">
