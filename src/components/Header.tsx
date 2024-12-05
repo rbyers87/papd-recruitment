@@ -1,6 +1,6 @@
 import React from 'react';
 import { Menu } from 'lucide-react';
-import { DepartmentPatch } from './DepartmentPatch';
+import { DepartmentPatch } from './photos/papdPatch';
 
 export function Header() {
   return (
