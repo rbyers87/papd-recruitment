@@ -5,7 +5,7 @@ export function Hero() {
     <div className="relative h-[600px]">
       <div className="absolute inset-0">
         <img
-          src="https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&q=80"
+          src="https://images.unsplash.com/photo-1577495508326-19a1b3cf65b7?auto=format&fit=crop&q=80"
           alt="Port Arthur Police Department"
           className="w-full h-full object-cover"
         />
