@@ -2,27 +2,27 @@ import React from 'react';
 
 const salaryTiers = [
   {
-    title: "Police Cadet",
-    salary: "$33,280",
+    title: "Police Officer Trainee",
+    salary: "$52,000",
     duration: "During Academy Training",
     benefits: ["Full salary during training", "Benefits start immediately", "Academy uniform provided"]
   },
   {
-    title: "Police Officer Entry - 5 years",
-    salary: "$66,939 - $72,327",
-    duration: "First 5 Years",
+    title: "Police Officer I",
+    salary: "$62,000 - $75,000",
+    duration: "First 2 Years",
     benefits: ["Annual step increases", "Shift differential pay", "Overtime opportunities"]
   },
   {
-    title: "Police Officer 6 - 9",
-    salary: "$75,183 - $77,238",
-    duration: "6 - 9 Years Experience",
+    title: "Police Officer II",
+    salary: "$75,000 - $92,000",
+    duration: "3-5 Years Experience",
     benefits: ["Specialized unit opportunities", "Leadership development", "Advanced training"]
   },
   {
-    title: "Police Officer 10 - 14+",
-    salary: "$80,328 - $86,883",
-    duration: "10 - 14+ Years Experience",
+    title: "Senior Officer/Specialist",
+    salary: "$92,000 - $110,000",
+    duration: "5+ Years Experience",
     benefits: ["Special assignment pay", "Training instructor opportunities", "Advanced career paths"]
   }
 ];

@@ -1,4 +1,6 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
 import { About } from './components/About';
@@ -9,8 +11,11 @@ import { Requirements } from './components/Requirements';
 import { OnlineServices } from './components/OnlineServices';
 import { ApplicationForm } from './components/ApplicationForm';
 import { Footer } from './components/Footer';
+import { LoginPage } from './components/admin/LoginPage';
+import { AdminDashboard } from './components/admin/AdminDashboard';
+import { ProtectedRoute } from './components/admin/ProtectedRoute';
 
-function App() {
+function PublicLayout() {
   return (
     <div className="min-h-screen">
       <Header />
@@ -26,6 +31,27 @@ function App() {
       </main>
       <Footer />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<PublicLayout />} />
+          <Route path="/admin/login" element={<LoginPage />} />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </Router>
   );
 }
 
