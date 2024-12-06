@@ -4,12 +4,12 @@ import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  apiKey: "AIzaSyDE34odDPJcbgY985S6QpA5v4OmPRknXPY",
+  authDomain: "papd-recruiting.firebaseapp.com",
+  projectId: "papd-recruiting",
+  storageBucket: "papd-recruiting.firebasestorage.app",
+  messagingSenderId: "725579971680",
+  appId: "1:725579971680:web:b3c2dfb137911530ced705"
 };
 
 const app = initializeApp(firebaseConfig);
