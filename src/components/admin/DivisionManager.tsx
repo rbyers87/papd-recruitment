@@ -1,41 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
 import { Division } from '../../lib/types';
 import { ContentEditor } from './ContentEditor';
 import { Plus, Trash2 } from 'lucide-react';
+import { getDivisions, createDivision, deleteDivision } from '../../services/divisions';
 
 export function DivisionManager() {
   const [divisions, setDivisions] = useState<Division[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadDivisions();
   }, []);
 
   const loadDivisions = async () => {
-    const querySnapshot = await getDocs(collection(db, 'divisions'));
-    const divisionsData = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Division[];
-    setDivisions(divisionsData);
+    try {
+      setLoading(true);
+      const data = await getDivisions();
+      setDivisions(data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load divisions');
+      console.error('Error loading divisions:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAdd = async () => {
-    const newDivision = {
-      title: 'New Division',
-      description: '',
-      type: 'full-time' as const
-    };
-    const docRef = await addDoc(collection(db, 'divisions'), newDivision);
-    setDivisions([...divisions, { ...newDivision, id: docRef.id }]);
+    try {
+      const newDivision = {
+        title: 'New Division',
+        description: '',
+        type: 'full-time' as const
+      };
+      const data = await createDivision(newDivision);
+      setDivisions([data, ...divisions]);
+      setError(null);
+    } catch (err) {
+      setError('Failed to create division');
+      console.error('Error creating division:', err);
+    }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, 'divisions', id));
-    setDivisions(divisions.filter(d => d.id !== id));
+    try {
+      await deleteDivision(id);
+      setDivisions(divisions.filter(d => d.id !== id));
+      setError(null);
+    } catch (err) {
+      setError('Failed to delete division');
+      console.error('Error deleting division:', err);
+    }
   };
+
+  if (loading) {
+    return <div className="text-center py-4">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -50,6 +72,12 @@ export function DivisionManager() {
         </button>
       </div>
 
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+          {error}
+        </div>
+      )}
+
       <div className="grid gap-6">
         {divisions.map(division => (
           <div key={division.id} className="bg-white p-6 rounded-lg shadow-sm">
@@ -58,9 +86,16 @@ export function DivisionManager() {
                 id={division.id}
                 initialData={division}
                 category="divisions"
-                onSave={() => {
-                  setEditingId(null);
-                  loadDivisions();
+                onSave={async (data) => {
+                  try {
+                    await updateDivision(division.id, data);
+                    await loadDivisions();
+                    setEditingId(null);
+                    setError(null);
+                  } catch (err) {
+                    setError('Failed to update division');
+                    console.error('Error updating division:', err);
+                  }
                 }}
               />
             ) : (

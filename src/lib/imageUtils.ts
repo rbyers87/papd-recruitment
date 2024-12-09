@@ -1,17 +1,32 @@
-import { storage } from './firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { supabase } from './supabase';
 
 export async function uploadImage(file: File, path: string): Promise<string> {
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file);
-  return getDownloadURL(storageRef);
+  const { data, error } = await supabase.storage
+    .from('images')
+    .upload(path, file);
+
+  if (error) {
+    throw error;
+  }
+
+  const { data: publicUrl } = supabase.storage
+    .from('images')
+    .getPublicUrl(data.path);
+
+  return publicUrl.publicUrl;
 }
 
 export function getImagePath(filename: string): string {
-  return `/images/${filename}`;
+  if (filename.startsWith('http')) {
+    return filename;
+  }
+  const { data } = supabase.storage
+    .from('images')
+    .getPublicUrl(filename);
+  
+  return data.publicUrl;
 }
 
-// Default paths for different image categories
 export const IMAGE_PATHS = {
   patch: '/images/patch.png',
   hero: '/images/hero.jpg',

@@ -1,41 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
 import { Team } from '../../lib/types';
 import { ContentEditor } from './ContentEditor';
 import { Plus, Trash2 } from 'lucide-react';
+import { getTeams, createTeam, deleteTeam, updateTeam } from '../../services/teams';
 
 export function TeamManager() {
   const [teams, setTeams] = useState<Team[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     loadTeams();
   }, []);
 
   const loadTeams = async () => {
-    const querySnapshot = await getDocs(collection(db, 'teams'));
-    const teamsData = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as Team[];
-    setTeams(teamsData);
+    try {
+      setLoading(true);
+      const data = await getTeams();
+      setTeams(data);
+      setError(null);
+    } catch (err) {
+      setError('Failed to load teams');
+      console.error('Error loading teams:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAdd = async () => {
-    const newTeam = {
-      title: 'New Team',
-      description: '',
-      type: 'special' as const
-    };
-    const docRef = await addDoc(collection(db, 'teams'), newTeam);
-    setTeams([...teams, { ...newTeam, id: docRef.id }]);
+    try {
+      const newTeam = {
+        title: 'New Team',
+        description: '',
+        type: 'special' as const
+      };
+      const data = await createTeam(newTeam);
+      setTeams([data, ...teams]);
+      setError(null);
+    } catch (err) {
+      setError('Failed to create team');
+      console.error('Error creating team:', err);
+    }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, 'teams', id));
-    setTeams(teams.filter(t => t.id !== id));
+    try {
+      await deleteTeam(id);
+      setTeams(teams.filter(t => t.id !== id));
+      setError(null);
+    } catch (err) {
+      setError('Failed to delete team');
+      console.error('Error deleting team:', err);
+    }
   };
+
+  if (loading) {
+    return <div className="text-center py-4">Loading...</div>;
+  }
 
   return (
     <div className="space-y-6">
@@ -50,6 +72,12 @@ export function TeamManager() {
         </button>
       </div>
 
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
+          {error}
+        </div>
+      )}
+
       <div className="grid gap-6">
         {teams.map(team => (
           <div key={team.id} className="bg-white p-6 rounded-lg shadow-sm">
@@ -58,9 +86,16 @@ export function TeamManager() {
                 id={team.id}
                 initialData={team}
                 category="teams"
-                onSave={() => {
-                  setEditingId(null);
-                  loadTeams();
+                onSave={async (data) => {
+                  try {
+                    await updateTeam(team.id, data);
+                    await loadTeams();
+                    setEditingId(null);
+                    setError(null);
+                  } catch (err) {
+                    setError('Failed to update team');
+                    console.error('Error updating team:', err);
+                  }
                 }}
               />
             ) : (

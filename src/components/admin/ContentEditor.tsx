@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { ImageUpload } from './ImageUpload';
 import { Save } from 'lucide-react';
-import { db } from '../../lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
 
 interface ContentEditorProps {
   id: string;
@@ -12,19 +10,21 @@ interface ContentEditorProps {
     imageUrl?: string;
   };
   category: 'divisions' | 'teams' | 'gallery';
-  onSave: () => void;
+  onSave: (data: any) => Promise<void>;
 }
 
 export function ContentEditor({ id, initialData, category, onSave }: ContentEditorProps) {
   const [data, setData] = useState(initialData);
+  const [saving, setSaving] = useState(false);
 
   const handleSave = async () => {
     try {
-      const docRef = doc(db, category, id);
-      await updateDoc(docRef, data);
-      onSave();
+      setSaving(true);
+      await onSave(data);
     } catch (error) {
       console.error('Save failed:', error);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -75,10 +75,11 @@ export function ContentEditor({ id, initialData, category, onSave }: ContentEdit
 
       <button
         onClick={handleSave}
-        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        disabled={saving}
+        className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
       >
         <Save className="w-4 h-4 mr-2" />
-        Save Changes
+        {saving ? 'Saving...' : 'Save Changes'}
       </button>
     </div>
   );

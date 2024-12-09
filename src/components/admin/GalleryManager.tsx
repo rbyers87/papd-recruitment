@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { collection, getDocs, addDoc, deleteDoc, doc } from 'firebase/firestore';
-import { db } from '../../lib/firebase';
 import { GalleryItem } from '../../lib/types';
 import { ContentEditor } from './ContentEditor';
 import { Plus, Trash2 } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+import { logAuditEvent } from '../../lib/audit';
 
 export function GalleryManager() {
   const [items, setItems] = useState<GalleryItem[]>([]);
@@ -14,12 +14,17 @@ export function GalleryManager() {
   }, []);
 
   const loadGallery = async () => {
-    const querySnapshot = await getDocs(collection(db, 'gallery'));
-    const galleryData = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as GalleryItem[];
-    setItems(galleryData);
+    const { data, error } = await supabase
+      .from('gallery')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error loading gallery:', error);
+      return;
+    }
+
+    setItems(data || []);
   };
 
   const handleAdd = async () => {
@@ -29,13 +34,53 @@ export function GalleryManager() {
       imageUrl: '',
       category: 'general'
     };
-    const docRef = await addDoc(collection(db, 'gallery'), newItem);
-    setItems([...items, { ...newItem, id: docRef.id }]);
+
+    const { data, error } = await supabase
+      .from('gallery')
+      .insert([newItem])
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding gallery item:', error);
+      return;
+    }
+
+    if (data) {
+      setItems([data, ...items]);
+      await logAuditEvent('gallery_item_created', { itemId: data.id });
+    }
   };
 
   const handleDelete = async (id: string) => {
-    await deleteDoc(doc(db, 'gallery', id));
+    const { error } = await supabase
+      .from('gallery')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error deleting gallery item:', error);
+      return;
+    }
+
     setItems(items.filter(item => item.id !== id));
+    await logAuditEvent('gallery_item_deleted', { itemId: id });
+  };
+
+  const handleSave = async (id: string, data: Partial<GalleryItem>) => {
+    const { error } = await supabase
+      .from('gallery')
+      .update(data)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating gallery item:', error);
+      return;
+    }
+
+    await loadGallery();
+    setEditingId(null);
+    await logAuditEvent('gallery_item_updated', { itemId: id });
   };
 
   return (
@@ -59,10 +104,7 @@ export function GalleryManager() {
                 id={item.id}
                 initialData={item}
                 category="gallery"
-                onSave={() => {
-                  setEditingId(null);
-                  loadGallery();
-                }}
+                onSave={(data) => handleSave(item.id, data)}
               />
             ) : (
               <div>
